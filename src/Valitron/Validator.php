@@ -1055,6 +1055,8 @@ class Validator
      */
     public function setData($data, $fields = array())
     {
+        //reset all previous errors
+        $this->_errors = array();
         // Allows filtering of used input fields against optional second array of field names allowed
         // This is useful for limiting raw $_POST or $_GET data to only known fields
         $this->_fields = !empty($fields) ? array_intersect_key($data, array_flip($fields)) : $data;
