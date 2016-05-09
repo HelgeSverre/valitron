@@ -1,4 +1,5 @@
 <?php
+
 namespace Valitron;
 
 use InvalidArgumentException;
@@ -14,6 +15,7 @@ use InvalidArgumentException;
  */
 class Validator
 {
+
     /**
      * @var string
      */
@@ -75,19 +77,17 @@ class Validator
      */
     public function __construct($data, $fields = array(), $lang = null, $langDir = null)
     {
-        // Allows filtering of used input fields against optional second array of field names allowed
-        // This is useful for limiting raw $_POST or $_GET data to only known fields
-        $this->_fields = !empty($fields) ? array_intersect_key($data, array_flip($fields)) : $data;
+        $this->setData($data, $fields);
 
         // set lang in the follow order: constructor param, static::$_lang, default to en
-        $lang = $lang ?: static::lang();
+        $lang = $lang ? : static::lang();
 
         // set langDir in the follow order: constructor param, static::$_langDir, default to package lang dir
-        $langDir = $langDir ?: static::langDir();
+        $langDir = $langDir ? : static::langDir();
 
         // Load language file in directory
         $langFile = rtrim($langDir, '/') . '/' . $lang . '.php';
-        if (stream_resolve_include_path($langFile) ) {
+        if (stream_resolve_include_path($langFile)) {
             $langMessages = include $langFile;
             static::$_ruleMessages = array_merge(static::$_ruleMessages, $langMessages);
         } else {
@@ -107,7 +107,7 @@ class Validator
             static::$_lang = $lang;
         }
 
-        return static::$_lang ?: 'en';
+        return static::$_lang ? : 'en';
     }
 
     /**
@@ -122,7 +122,7 @@ class Validator
             static::$_langDir = $dir;
         }
 
-        return static::$_langDir ?: dirname(dirname(__DIR__)) . '/lang';
+        return static::$_langDir ? : dirname(dirname(__DIR__)) . '/lang';
     }
 
     /**
@@ -463,7 +463,7 @@ class Validator
         foreach ($this->validUrlPrefixes as $prefix) {
             if (strpos($value, $prefix) !== false) {
                 $host = parse_url(strtolower($value), PHP_URL_HOST);
-                
+
                 return checkdnsrr($host, 'A') || checkdnsrr($host, 'AAAA') || checkdnsrr($host, 'CNAME');
             }
         }
@@ -623,7 +623,7 @@ class Validator
             if (is_array($params[0])) {
                 $cards = $params[0];
             } elseif (is_string($params[0])) {
-                $cardType  = $params[0];
+                $cardType = $params[0];
                 if (isset($params[1]) && is_array($params[1])) {
                     $cards = $params[1];
                     if (!in_array($cardType, $cards)) {
@@ -658,7 +658,7 @@ class Validator
                 $sum += $sub_total;
             }
             if ($sum > 0 && $sum % 10 == 0) {
-                    return true;
+                return true;
             }
 
             return false;
@@ -669,11 +669,11 @@ class Validator
                 return true;
             } else {
                 $cardRegex = array(
-                    'visa'          => '#^4[0-9]{12}(?:[0-9]{3})?$#',
-                    'mastercard'    => '#^5[1-5][0-9]{14}$#',
-                    'amex'          => '#^3[47][0-9]{13}$#',
-                    'dinersclub'    => '#^3(?:0[0-5]|[68][0-9])[0-9]{11}$#',
-                    'discover'      => '#^6(?:011|5[0-9]{2})[0-9]{12}$#',
+                    'visa' => '#^4[0-9]{12}(?:[0-9]{3})?$#',
+                    'mastercard' => '#^5[1-5][0-9]{14}$#',
+                    'amex' => '#^3[47][0-9]{13}$#',
+                    'dinersclub' => '#^3(?:0[0-5]|[68][0-9])[0-9]{11}$#',
+                    'discover' => '#^6(?:011|5[0-9]{2})[0-9]{12}$#',
                 );
 
                 if (isset($cardType)) {
@@ -684,7 +684,6 @@ class Validator
 
                     // we only need to test against one card type
                     return (preg_match($cardRegex[$cardType], $value) === 1);
-
                 } elseif (isset($cards)) {
                     // if we have cards, check our users card against only the ones we have
                     foreach ($cards as $card) {
@@ -732,7 +731,8 @@ class Validator
     }
 
     //Validate optional field
-    protected function validateOptional($field, $value, $params) {
+    protected function validateOptional($field, $value, $params)
+    {
         //Always return true
         return true;
     }
@@ -847,7 +847,7 @@ class Validator
         }
 
         // Dead end, abort
-        elseif ($identifier === NULL || ! isset($data[$identifier])) {
+        elseif ($identifier === NULL || !isset($data[$identifier])) {
             return array(null, false);
         }
 
@@ -871,12 +871,12 @@ class Validator
     {
         foreach ($this->_validations as $v) {
             foreach ($v['fields'] as $field) {
-                 list($values, $multiple) = $this->getPart($this->_fields, explode('.', $field));
+                list($values, $multiple) = $this->getPart($this->_fields, explode('.', $field));
 
                 // Don't validate if the field is not required and the value is empty
                 if ($this->hasRule('optional', $field) && isset($values)) {
                     //Continue with execution below if statement
-                } elseif ($v['rule'] !== 'required' && !$this->hasRule('required', $field) && (! isset($values) || $values === '' || ($multiple && count($values) == 0))) {
+                } elseif ($v['rule'] !== 'required' && !$this->hasRule('required', $field) && (!isset($values) || $values === '' || ($multiple && count($values) == 0))) {
                     continue;
                 }
 
@@ -1014,7 +1014,7 @@ class Validator
             if (is_array($params)) {
                 $i = 1;
                 foreach ($params as $k => $v) {
-                    $tag = '{field'. $i .'}';
+                    $tag = '{field' . $i . '}';
                     $label = isset($params[$k]) && (is_numeric($params[$k]) || is_string($params[$k])) && isset($this->_labels[$params[$k]]) ? $this->_labels[$params[$k]] : $tag;
                     $msg = str_replace($tag, $label, $msg);
                     $i++;
@@ -1045,4 +1045,20 @@ class Validator
             }
         }
     }
+
+    /**
+     * 
+     * 
+     * @param  array $data
+     * @param  array $fields
+     * @return $this
+     */
+    public function setData($data, $fields = array())
+    {
+        // Allows filtering of used input fields against optional second array of field names allowed
+        // This is useful for limiting raw $_POST or $_GET data to only known fields
+        $this->_fields = !empty($fields) ? array_intersect_key($data, array_flip($fields)) : $data;
+        return $this;
+    }
+
 }
