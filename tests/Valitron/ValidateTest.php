@@ -1132,6 +1132,18 @@ class ValidateTest extends BaseTestCase
         $this->assertTrue($v->validate());
         $this->assertEmpty($v->errors());
     }
+    
+    public function testWithData(){
+        $v = new Validator(array());
+        $v->rule('required', 'name');
+        //validation failed, so must have errors
+        $this->assertFalse($v->validate());
+        $this->assertNotEmpty($v->errors());
+        //create copy with different data
+        $v2 = $v->withData(['name' => 'Chester Tester']);
+        $this->assertTrue($v2->validate());
+        $this->assertEmpty($v2->errors());
+    }
 
 }
 

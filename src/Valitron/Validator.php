@@ -1047,7 +1047,7 @@ class Validator
     }
 
     /**
-     * 
+     * Replace data on current instance
      * 
      * @param  array $data
      * @param  array $fields
@@ -1061,6 +1061,25 @@ class Validator
         // This is useful for limiting raw $_POST or $_GET data to only known fields
         $this->_fields = !empty($fields) ? array_intersect_key($data, array_flip($fields)) : $data;
         return $this;
+    }
+
+    /**
+     * Replace data on cloned instance
+     * 
+     * @param  array $data
+     * @param  array $fields
+     * @return Valitron
+     */
+    public function withData($data, $fields = array())
+    {
+        //create a copy of ourselves
+        $new = clone $this;
+        //reset all previous errors
+        $new->_errors = array();
+        //overwrite fields
+        $new->_fields = !empty($fields) ? array_intersect_key($data, array_flip($fields)) : $data;
+
+        return $new;
     }
 
 }
